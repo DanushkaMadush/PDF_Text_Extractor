@@ -20,10 +20,3 @@ async def extract_pdf(file: UploadFile = File(...)):
     except Exception as e:
         logger.error(f"Failed to response PDF : {e}")
         raise HTTPException(status_code=500 , detail="Internal PDF processing PDF error")
-
-    # Placeholder logic until we implement extractor service
-    return JSONResponse({
-        "message": "File received successfully.",
-        "filename": file.filename,
-        "content_type": file.content_type
-    })
