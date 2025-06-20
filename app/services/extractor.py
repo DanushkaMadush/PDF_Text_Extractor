@@ -44,7 +44,7 @@ def extract_tables_camelot(filepath : str):
     extracted_tables = []
     
     try:
-        tables = camelot.read_pdf(filepath , pages=all ,flavor='lattice')
+        tables = camelot.read_pdf(filepath , pages=all ,flavor='stream')
         
         for table in tables:
                 extracted_tables.append(table.data)
