@@ -52,7 +52,20 @@ def extract_tables_camelot(filepath : str):
     except Exception as e:
         logger.error(f"Camelot failed to extract tables: {e}")
         
-    return extracted_tables 
+    return extracted_tables
+
+def is_scanned_pdf(filepath : str , threshold : float = 0.7) -> bool:
+    # If most pages have no text , assume it as a scanned doc
+    try:
+        doc = fitz.open(filepath)
+        no_text_pages = sum(1 for page in doc if not page.get_text().strip())
+        ratio = no_text_pages / len(doc)
+        logger.info(f"Scanned page ratio: {ratio:.2f}")
+        return ratio >= threshold
+    
+    except Exception as e:
+        logger.error(f"Failed to detect scanned PDF: {e}")
+        return False 
 
 def process_pdf(uploaded_file) -> dict:
     with tempfile.NamedTemporaryFile(delete=False , suffix=".pdf") as tmp:
@@ -61,20 +74,20 @@ def process_pdf(uploaded_file) -> dict:
         
     logger.info(f"Processing PDF:{uploaded_file.filename}")
     
-    text_blocks = extract_text_pdfplumber(tmp_path)
-    tables = extract_tables_camelot(tmp_path)
+    is_scanned = is_scanned_pdf(tmp_path)
+    logger.info(f"PDF classified as: {'scanned' if is_scanned else 'digital'}")
     
-    if all(not text for text in text_blocks):
-        logger.warning("No text found with pdfplumber. Using OCR Fallback")
-        ocr_fallback = extract_text_ocr(tmp_path)
-        
+    if is_scanned:
+        text_blocks = extract_text_ocr(tmp_path)
+        tables = []
     else:
-        ocr_fallback = []
+        text_blocks , _ = extract_text_pdfplumber(tmp_path)
+        tables = extract_tables_camelot(tmp_path)
         
     os.remove(tmp_path)
     
     return {
         "text_blocks" : text_blocks,
         "tables" : tables,
-        "ocr_fallback" : ocr_fallback   
+        "ocr_fallback" : [] if not is_scanned else text_blocks  
     }    
