@@ -6,6 +6,7 @@ from PIL import Image
 import tempfile
 import os
 import logging
+import camelot
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +39,20 @@ def extract_text_ocr(filepath : str):
         logger.error(f"OCR failed: {e}")
         
     return ocr_texts
+
+def extract_tables_camelot(filepath : str):
+    extracted_tables = []
+    
+    try:
+        tables = camelot.read_pdf(filepath , pages=all ,flavor='lattice')
+        
+        for table in tables:
+                extracted_tables.append(table.data)
+                
+    except Exception as e:
+        logger.error(f"Camelot failed to extract tables: {e}")
+        
+    return extracted_tables 
 
 def process_pdf(uploaded_file) -> dict:
     with tempfile.NamedTemporaryFile(delete=False , suffix=".pdf") as tmp:
