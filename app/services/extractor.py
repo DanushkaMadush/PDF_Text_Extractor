@@ -61,7 +61,8 @@ def process_pdf(uploaded_file) -> dict:
         
     logger.info(f"Processing PDF:{uploaded_file.filename}")
     
-    text_blocks , tables = extract_text_pdfplumber(tmp_path)
+    text_blocks = extract_text_pdfplumber(tmp_path)
+    tables = extract_tables_camelot(tmp_path)
     
     if all(not text for text in text_blocks):
         logger.warning("No text found with pdfplumber. Using OCR Fallback")
