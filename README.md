@@ -6,8 +6,6 @@ A **FastAPI** microservice for uploading PDF files and extracting **text-only** 
 - Extract readable text from all pages
 - Return extracted text as JSON
 
-> Note: This repository currently contains a folder structure for the service, but core Python files such as `main.py` and `requirements.txt` are placeholders. This README documents the intended FastAPI implementation.
-
 ## Tech Stack
 
 - **FastAPI** (API + OpenAPI docs)
